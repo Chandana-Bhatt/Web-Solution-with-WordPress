@@ -59,7 +59,8 @@ Three tier architecture -
    
    Step 5,6,7 is shown below:
    
-      ![IMG-9308](https://user-images.githubusercontent.com/119781770/210659181-4f213aaa-abfa-4488-afdb-fdbcbd3f4ec1.jpg)
+   ![IMG-9308](https://user-images.githubusercontent.com/119781770/211180795-4fff49ed-cf9c-4d3f-8021-4b0055e4f34c.jpg)
+
 
    8. Use vgcreate utility to add all 3 PVs to a volume group (VG). Name the VG webdata-vg
    
@@ -74,7 +75,7 @@ Three tier architecture -
        
    Step 8,9,10,11 is shown below:
     
-    ![IMG-9309](https://user-images.githubusercontent.com/119781770/210659750-b493cdad-e835-49d8-8433-ac05c56d2427.jpg)
+   ![IMG-9309](https://user-images.githubusercontent.com/119781770/210659750-b493cdad-e835-49d8-8433-ac05c56d2427.jpg)
 
    10. Use lvcreate utility to create 2 logical volumes. apps-lv (Use half of the PV size), and logs-        lv Use the remaining space of the PV size. NOTE: apps-lv will be used to store data for the            Website while, logs-lv will be used to store data for logs.
    
@@ -110,7 +111,7 @@ Three tier architecture -
            sudo mount /dev/webdata-vg/apps-lv /var/www/html/
            `````
            
-          ![IMG-9311](https://user-images.githubusercontent.com/119781770/210663320-b7a0a7e7-cb05-43a5-a970-d580ab4fc670.jpg)
+   ![IMG-9311](https://user-images.githubusercontent.com/119781770/210663320-b7a0a7e7-cb05-43a5-a970-d580ab4fc670.jpg)
 
            
    16. Use rsync utility to backup all the files in the log directory /var/log into                         /home/recovery/logs (This is required before mounting the file system)
@@ -118,7 +119,7 @@ Three tier architecture -
             `````
             sudo rsync -av /var/log/. /home/recovery/logs/
             `````
-           ![IMG-9316](https://user-images.githubusercontent.com/119781770/210663813-c84d6c88-aea6-49bd-b3a1-55c341a55c7f.jpg)
+   ![IMG-9316](https://user-images.githubusercontent.com/119781770/210663813-c84d6c88-aea6-49bd-b3a1-55c341a55c7f.jpg)
 
    17. Mount /var/log on logs-lv logical volume. (Note that all the existing data on /var/log will be        deleted. That is why step 15 above is very important)
              
@@ -138,8 +139,8 @@ Three tier architecture -
 
    20. Update /etc/fstab file so that the mount configuration will persist after restart of the              server. 
             
-            ![IMG-9318](https://user-images.githubusercontent.com/119781770/210665177-09296948-1ec5-48d7-9c65-8ff9057a1be4.jpg)
+   ![IMG-9318](https://user-images.githubusercontent.com/119781770/210665177-09296948-1ec5-48d7-9c65-8ff9057a1be4.jpg)
    
    
 
-            ![IMG-9317](https://user-images.githubusercontent.com/119781770/210665226-99ef2152-f592-4be6-bb5c-b908ff8bd86d.jpg)
+   ![IMG-9317](https://user-images.githubusercontent.com/119781770/210665226-99ef2152-f592-4be6-bb5c-b908ff8bd86d.jpg)
