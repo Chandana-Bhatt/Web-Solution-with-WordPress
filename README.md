@@ -144,3 +144,108 @@ Three tier architecture -
    
 
    ![IMG-9317](https://user-images.githubusercontent.com/119781770/210665226-99ef2152-f592-4be6-bb5c-b908ff8bd86d.jpg)
+
+
+   21. Prepare the Database Server Launch a second RedHat EC2 instance that will have a role – ‘DB Server’. Repeat the same steps as for the Web Server, but instead of apps-lv create db-lv and mount it to /db directory instead of /var/www/html/.
+   
+   22. Prepare web-server instance to install WordPress. 
+   
+          a. Start by updating the repository.
+                    ````
+                    sudo yum -y update
+                    ````
+            
+          b. Install wget, Apache and it’s dependencies
+                    
+                    ```
+                    sudo yum -y install wget httpd php php-mysqlnd php-fpm php-json
+                    ```
+          c. Start Apache
+            
+                    ```
+                    sudo systemctl enable httpd
+                    sudo systemctl start httpd
+                    ```
+          d. To install PHP and it’s depemdencies
+                    
+                    ```
+                    sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+                    sudo yum install yum-utils http://rpms.remirepo.net/enterprise/remi-release-8.rpm
+                    sudo yum module list php
+                    sudo yum module reset php
+                    sudo yum module enable php:remi-7.4
+                    sudo yum install php php-opcache php-gd php-curl php-mysqlnd
+                    sudo systemctl start php-fpm
+                    sudo systemctl enable php-fpm
+                    setsebool -P httpd_execmem 1
+                    ```
+          c. Restart Apache
+                     
+                    ```
+                    Restart Apache
+                    ```
+          d. Download wordpress and copy wordpress to var/www/html
+                    
+                    ```
+                    mkdir wordpress
+                    cd   wordpress
+                    sudo wget http://wordpress.org/latest.tar.gz
+                    sudo tar xzvf latest.tar.gz
+                    sudo rm -rf latest.tar.gz
+                    cp wordpress/wp-config-sample.php wordpress/wp-config.php
+                    cp -R wordpress /var/www/html/
+                    ```
+          e. Configure SELinux Policies
+                    
+                    ```
+                    sudo chown -R apache:apache /var/www/html/wordpress
+                    sudo chcon -t httpd_sys_rw_content_t /var/www/html/wordpress -R
+                    sudo setsebool -P httpd_can_network_connect=1
+                    ``` 
+          
+
+   23. Install MySQL on your DB Server EC2
+          
+                    ```
+                    sudo yum update
+                    sudo yum install mysql-server
+                    ```
+   Verify that the service is up and running by using sudo systemctl status mysqld, if it is not running, restart the service and enable it so it will be running even after reboot:
+   
+                    ```
+                    sudo systemctl restart mysqld
+                    sudo systemctl enable mysqld
+                    ```
+   24. Configure DB to work with WordPress
+                    
+                    ```
+                    sudo mysql
+                    CREATE DATABASE wordpress;
+                    CREATE USER `myuser`@`<Web-Server-Private-IP-Address>` IDENTIFIED BY 'mypass';
+                    GRANT ALL ON wordpress.* TO 'myuser'@'<Web-Server-Private-IP-Address>';
+                    FLUSH PRIVILEGES;
+                    SHOW DATABASES;
+                    exit
+                    ```
+   25. Install MySQL client and test that you can connect from your Web Server to your DB server by using mysql-client
+                    
+                    ```
+                    sudo yum install mysql
+                    sudo mysql -u admin -p -h <DB-Server-Private-IP-address>
+                    ```
+   26. Verify if you can successfully execute SHOW DATABASES; command and see a list of existing databases.
+ 
+   27. Change permissions and configuration so Apache could use WordPress
+   
+   28. Enable TCP port 80 in Inbound Rules configuration for your Web Server EC2 (enable from everywhere 0.0.0.0/0 or from your workstation’s IP)
+   
+   29. Try to access from your browser the link to your WordPress 
+   
+   ![IMG-9333](https://user-images.githubusercontent.com/119781770/211181844-cdfb0231-5c17-4af1-bea6-7b0a243a4d98.JPG)
+
+   Fill out the details and try to login using the credentials.
+   
+   ![IMG-9332](https://user-images.githubusercontent.com/119781770/211181890-28c2a602-e97b-418c-af04-731c089bce1d.jpg)
+   
+   ![IMG-9335](https://user-images.githubusercontent.com/119781770/211181928-0716b8d5-64f2-4b06-ad09-aca5dab440fd.jpg)
+
